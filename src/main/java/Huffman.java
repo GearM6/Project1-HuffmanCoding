@@ -1,6 +1,7 @@
 import com.google.common.collect.*;
 
 import java.io.*;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -29,6 +30,7 @@ public class Huffman {
         while(characters.size() > 0){
             Multiset.Entry entry = characters.pollFirstEntry();
             queue.add(new HuffmanNode(entry.toString().charAt(0), entry.getCount()));
+            System.out.println(entry.toString());
         }
     }
 
@@ -38,11 +40,13 @@ public class Huffman {
             System.out.println(root.getCharacter() + ":" + s);
             return;
         }
-        if(root.getRight() != null){
-            getEncoding(root.getLeft(), s+"0", map);
-        }
-        if(root.getLeft() != null){
-            getEncoding(root.getRight(), s+"1", map);
+        else {
+            if(root.getRight() != null){
+                getEncoding(root.getLeft(), s+"0", map);
+            }
+            if(root.getLeft() != null){
+                getEncoding(root.getRight(), s+"1", map);
+            }
         }
     }
 
@@ -68,5 +72,15 @@ public class Huffman {
         System.out.println(encodedText.toString());
         System.out.println(encodedText.length() + "Bytes");
         File compressedFile = new File("./USCompressditution.txt");
+        BitSet bitCode = new BitSet(encodedText.toString().length());
+        BitOutputStream outputStream = new BitOutputStream(new FileOutputStream(compressedFile));
+        outputStream.write();
+//        for(int i = 0; i < bitCode.length(); i++){
+//            if(encodedText.charAt(i) == '1'){
+//                bitCode.set(i);
+//            }
+//        }
+//        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(compressedFile));
+//        outputStream.writeObject(bitCode);
     }
 }
