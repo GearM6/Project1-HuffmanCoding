@@ -1,5 +1,6 @@
 import com.google.common.collect.*;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.io.*;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -30,14 +31,12 @@ public class Huffman {
         while(characters.size() > 0){
             Multiset.Entry entry = characters.pollFirstEntry();
             queue.add(new HuffmanNode(entry.toString().charAt(0), entry.getCount()));
-            System.out.println(entry.toString());
         }
     }
 
     public static void getEncoding(HuffmanNode root, String s, Map<Character, String> map){
         if(root.isLeaf()){
             map.put(root.getCharacter(), s);
-            System.out.println(root.getCharacter() + ":" + s);
             return;
         }
         else {
@@ -50,6 +49,26 @@ public class Huffman {
         }
     }
 
+    private static void encodeFile(File file, Map<Character, String> characterMap) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        int character;
+        StringBuilder encodedText = new StringBuilder();
+
+        while((character = reader.read()) != -1){
+            encodedText.append(characterMap.get((char) character));
+        }
+        File compressedFile = new File("./USCompresseditution.txt");
+        BitSet bitCode = new BitSet(encodedText.toString().length());
+
+        for(int i = 0; i < bitCode.length(); i++){
+            if(encodedText.charAt(i) == '1'){
+                bitCode.set(i);
+            }
+        }
+        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(compressedFile));
+        outputStream.writeObject(bitCode);
+    }
+
     public static void main(String[] args) throws IOException {
         File file = new File("./USConstitution.txt");
         SortedMultiset characters = getValues(file);
@@ -59,28 +78,20 @@ public class Huffman {
 
         //Add nodes to priority queue
         populatePriorityQueue(characters, queue);
+        System.out.println("Building tree.");
+        long startTime = System.nanoTime();
         HuffmanNode root = populateTree(queue);
+        long endTime = System.nanoTime();
+        System.out.println("Time elapsed: " + (endTime - startTime));
+
+
+        System.out.println("Encoding File.");
+        startTime = System.nanoTime();
         getEncoding(root, "", characterMap);
+        encodeFile(file, characterMap);
+        endTime = System.nanoTime();
+        System.out.println("Time elapsed: " + (endTime - startTime));
 
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        int character;
-        StringBuilder encodedText = new StringBuilder();
-
-        while((character = reader.read()) != -1){
-            encodedText.append(characterMap.get((char) character));
-        }
-        System.out.println(encodedText.toString());
-        System.out.println(encodedText.length() + "Bytes");
-        File compressedFile = new File("./USCompressditution.txt");
-        BitSet bitCode = new BitSet(encodedText.toString().length());
-        BitOutputStream outputStream = new BitOutputStream(new FileOutputStream(compressedFile));
-        outputStream.write();
-//        for(int i = 0; i < bitCode.length(); i++){
-//            if(encodedText.charAt(i) == '1'){
-//                bitCode.set(i);
-//            }
-//        }
-//        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(compressedFile));
-//        outputStream.writeObject(bitCode);
+        return;
     }
 }
