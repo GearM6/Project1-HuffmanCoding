@@ -49,7 +49,7 @@ public class Huffman {
         }
     }
 
-    private static void encodeFile(File file, Map<Character, String> characterMap) throws IOException {
+    public static void encodeFile(File file, Map<Character, String> characterMap) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         int character;
         StringBuilder encodedText = new StringBuilder();
